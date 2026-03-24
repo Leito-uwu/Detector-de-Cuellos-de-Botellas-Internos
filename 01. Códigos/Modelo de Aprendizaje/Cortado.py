@@ -13,5 +13,18 @@ def recortar_botella_dinamico(imagen_bgr_original, bbox, margen=30):
         
     x, y, w, h = bbox
     alto_img, ancho_img = imagen_bgr_original.shape[:2]
+
+    # 1. Calcular las coordenadas con margen
+    # max() y min() aseguran que si el margen se sale de la foto, se detenga en el borde (0 o el límite)
+    x_inicio = max(0, x - margen)
+    y_inicio = max(0, y - margen)
+    
+    x_fin = min(ancho_img, x + w + margen)
+    y_fin = min(alto_img, y + h + margen)
+    
+    # 2. Realizar el recorte (Slicing de arrays en NumPy)
+    recorte = imagen_bgr_original[y_inicio:y_fin, x_inicio:x_fin]
+    
+    return recorte
     
     
