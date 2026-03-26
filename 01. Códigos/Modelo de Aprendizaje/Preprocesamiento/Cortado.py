@@ -1,13 +1,12 @@
 import cv2
-import numpy as np
 
-def recortar_botella_dinamico(imagen_bgr_original, bbox, margen=20):
+def recortar_botella_dinamico(imagen_original, bbox, margen=20):
  
     if bbox is None:
         return None
         
     x, y, w, h = bbox
-    alto_img, ancho_img = imagen_bgr_original.shape[:2]
+    alto_img, ancho_img = imagen_original.shape[:2]
 
     # Calcular las coordenadas con margen
     # max() y min() aseguran que si el margen no se salga del limite
@@ -18,7 +17,7 @@ def recortar_botella_dinamico(imagen_bgr_original, bbox, margen=20):
     y_fin = min(alto_img, y + h + margen)
     
     # Recortar
-    recorte = imagen_bgr_original[y_inicio:y_fin, x_inicio:x_fin]
+    recorte = imagen_original[y_inicio:y_fin, x_inicio:x_fin]
     
     return recorte
     
