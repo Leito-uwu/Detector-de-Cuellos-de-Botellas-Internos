@@ -1,13 +1,9 @@
-# CELDA: Módulo Detector - Aislando el Contorno Blanco
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 
 def trabajar_con_contorno_blanco(imagen_bgr_original, debug=False):
-    """
-    Binariza la imagen y separa la botella de la máquina usando morfología
-    para extraer únicamente el Bounding Box de la botella cruda.
-    """
+
     alto_orig, ancho_orig = imagen_bgr_original.shape[:2]
 
     escala = 800.0 / ancho_orig
@@ -17,24 +13,21 @@ def trabajar_con_contorno_blanco(imagen_bgr_original, debug=False):
     centro_foto_x = nuevo_ancho // 2
     centro_foto_y = nuevo_alto // 2
 
-    # 1. Filtros (Los que ya demostraron funcionar en tu imagen)
+    # Escala de Grises
     gris = cv2.cvtColor(imagen_trabajo, cv2.COLOR_BGR2GRAY)
     gris_suavizado = cv2.medianBlur(gris, 15)
 
-    # 2. Binarización Adaptativa (Convierte el cuello negro a blanco)
+    # Binarización Adaptativa (Convierte el cuello negro a blanco)
     binarizada = cv2.adaptiveThreshold(gris_suavizado, 255,
                                       cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
                                       cv2.THRESH_BINARY_INV, 201, 10)
 
-    # ---------------------------------------------------------
-    # 3. NUEVO PASO CLAVE: DESCONECTAR LA MÁQUINA DE LA BOTELLA
-    # Usamos un kernel (pincel) elíptico grande para romper las uniones.
-    # Si la máquina sigue pegada, aumenta este número (ej. a 25, 25).
-    # ---------------------------------------------------------
+    
+    # Problemas con los contornos
     kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (15, 15))
     binarizada_limpia = cv2.morphologyEx(binarizada, cv2.MORPH_OPEN, kernel)
 
-    # 4. Encontrar contornos en la imagen ya limpia y separada
+    # Encuentra Contornor
     contornos, _ = cv2.findContours(binarizada_limpia, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
     mejor_contorno = None
@@ -42,7 +35,7 @@ def trabajar_con_contorno_blanco(imagen_bgr_original, debug=False):
 
     for c in contornos:
         area = cv2.contourArea(c)
-        if area < 10000: continue # Ignorar basura pequeña
+        if area < 10000: continue # Ignorar los pixeles pequeños
 
         M = cv2.moments(c)
         if M["m00"] == 0: continue
