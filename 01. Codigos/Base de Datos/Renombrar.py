@@ -6,6 +6,7 @@ drive.mount('/content/drive')
 RUTA_CARPETA = '/content/drive/MyDrive/Dataset/---'
 
 # Prefijo que llevaran todas las imagenes 
+# Ej. Botellas Malas
 PREFIJO = 'B_M'
 
 def renombrar_imagenes_masivo():
@@ -34,7 +35,15 @@ def renombrar_imagenes_masivo():
         ruta_vieja = os.path.join(RUTA_CARPETA, nombre_viejo)
         ruta_nueva = os.path.join(RUTA_CARPETA, nuevo_nombre)
 
-        contador += 1
+        try:
+            os.rename(ruta_vieja,ruta_nueva)
+            print(f"{nombre_viejo} -> {nuevo_nombre}")
+        
+        except Exception as e:
+            print(f"Error al renombrar: {nombre_viejo}: {e}")
 
+        contador += 1
+    print("Proceso Terminado")
+    
 # Ejecutar
 renombrar_imagenes_masivo()
