@@ -1,8 +1,7 @@
 import cv2
 import numpy as np
-import matplotlib.pyplot as plt
 
-def trabajar_con_contorno_blanco(imagen_bgr_original, debug=False):
+def trabajar_con_contorno_blanco(imagen_bgr_original):
 
     alto_orig, ancho_orig = imagen_bgr_original.shape[:2]
 
@@ -54,19 +53,7 @@ def trabajar_con_contorno_blanco(imagen_bgr_original, debug=False):
         # Extraer Bounding Box y re-escalar al tamaño original
         x, y, w, h = cv2.boundingRect(mejor_contorno)
         bbox_orig = (int(x/escala), int(y/escala), int(w/escala), int(h/escala))
-
-        if debug:
-            plt.figure(figsize=(20, 5))
-            plt.subplot(1, 4, 1); plt.imshow(gris_suavizado, cmap='gray'); plt.title("1. Blur")
-            plt.subplot(1, 4, 2); plt.imshow(binarizada, cmap='gray'); plt.title("2. Binarizado (PEGADO)")
-            plt.subplot(1, 4, 3); plt.imshow(binarizada_limpia, cmap='gray'); plt.title("3. Limpio (SEPARADO)")
-
-            # Dibujar el contorno ganador sobre la limpia para verificar
-            img_verificacion = cv2.cvtColor(binarizada_limpia, cv2.COLOR_GRAY2BGR)
-            cv2.drawContours(img_verificacion, [mejor_contorno], -1, (0, 255, 0), 5)
-            plt.subplot(1, 4, 4); plt.imshow(img_verificacion); plt.title("4. Contorno Elegido")
-            plt.show()
-
+        
         return bbox_orig
     else:
         return None
