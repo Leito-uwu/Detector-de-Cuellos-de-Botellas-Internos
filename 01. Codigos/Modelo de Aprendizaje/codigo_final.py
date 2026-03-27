@@ -50,15 +50,52 @@ def inspeccionar_botella(ruta_foto_camara):
     else:
         return "BUENA"
 
+import time
+
+import time
+import os
+import glob
+
 # ==========================================
-# SIMULACIÓN DE 1 DISPARO DE LA CÁMARA
+# SIMULACIÓN CONTINUA DE LA LÍNEA DE PRODUCCIÓN
 # ==========================================
 if __name__ == "__main__":
-    # Simula que la cámara acaba de tomar esta foto y te la mandó
-    foto_cruda = r"C:\Users\leona\Documents\PPP_Aranjuez\01. Codigos\Imagenes_Pruebas\Botellas_Malas\B_M0001.JPG" # Ajusta al nombre de tu foto
+    # 1. Ahora apuntamos a la CARPETA, no a una sola foto
+    carpeta_pruebas = r"C:\Users\leona\Documents\PPP_Aranjuez\01. Codigos\Imagenes_Pruebas\Botellas_Malas"
     
-    # Ejecutamos la función
-    resultado = inspeccionar_botella(foto_cruda)
+    # 2. Buscamos todas las imágenes JPG en esa carpeta
+    patron_busqueda = os.path.join(carpeta_pruebas, "*.JPG")
+    lista_fotos = glob.glob(patron_busqueda)
     
-    # Imprimimos la decisión final que mandarías al autómata
-    print(f"La botella inspeccionada es: {resultado}")
+    # También buscamos en minúsculas por si acaso (.jpg)
+    lista_fotos.extend(glob.glob(os.path.join(carpeta_pruebas, "*.jpg")))
+
+    if len(lista_fotos) == 0:
+        print("⚠️ No se encontraron imágenes en la carpeta seleccionada.")
+    else:
+        print(f"📦 Lote detectado: {len(lista_fotos)} botellas en la línea.\n")
+        
+        # 3. Iniciamos el ciclo de la cinta transportadora
+        for indice, ruta_foto in enumerate(lista_fotos, start=1):
+            nombre_archivo = os.path.basename(ruta_foto)
+            print(f"📸 [Botella {indice}/{len(lista_fotos)}] Inspeccionando: {nombre_archivo}...")
+            
+            # --- INICIO DEL CRONÓMETRO ---
+            inicio_timer = time.time()
+            
+            resultado = inspeccionar_botella(ruta_foto)
+            
+            # --- FIN DEL CRONÓMETRO ---
+            tiempo_ciclo_ms = (time.time() - inicio_timer) * 1000
+            
+            print("=========================================")
+            print(f"Veredicto: {resultado}")
+            print(f"Tiempo: {tiempo_ciclo_ms:.2f} ms")
+            print("=========================================")
+            
+            # 4. PAUSA DEL SISTEMA
+            # El programa se congela aquí hasta que presiones Enter en la consola
+            if indice < len(lista_fotos):
+                input("👉 Presiona ENTER para procesar la siguiente botella (o Ctrl+C para salir)... \n")
+        
+        print("✅ Lote terminado. Cinta transportadora detenida.")
