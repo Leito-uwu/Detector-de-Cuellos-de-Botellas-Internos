@@ -23,7 +23,7 @@ class PantallaMenuPrincipal(ctk.CTkToplevel):
 
         # Cargar Logo
         ruta_actual = os.path.dirname(__file__)
-        ruta_logo = os.path.join(ruta_actual, "..", "Aranjuez_logo.png") 
+        ruta_logo = os.path.join(ruta_actual, "..", "Assets","Aranjuez_logo.png") 
         
         try:
             pil_image = Image.open(ruta_logo)

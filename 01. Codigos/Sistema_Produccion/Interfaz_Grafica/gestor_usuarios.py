@@ -17,7 +17,7 @@ class PantallaUsuarios(ctk.CTkToplevel):
         self.header_frame = ctk.CTkFrame(self, fg_color="transparent")
         self.header_frame.pack(side="top", fill="x", padx=20, pady=20)
 
-        ruta_logo = os.path.join(os.path.dirname(__file__), "..", "Aranjuez_logo.png")
+        ruta_logo = os.path.join(os.path.dirname(__file__), "..", "Assets","Aranjuez_logo.png")
         try:
             pil_image = Image.open(ruta_logo)
             self.ctk_logo = ctk.CTkImage(light_image=pil_image, dark_image=pil_image, size=(80, 80))
