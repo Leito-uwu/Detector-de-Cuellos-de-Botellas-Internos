@@ -4,13 +4,14 @@ from PIL import Image
 
 class PantallaMenuPrincipal(ctk.CTkToplevel):
     # CORRECCIÓN 1: Añadimos 'on_abrir_bd=None' a los parámetros
-    def __init__(self, on_abrir_botellas=None, on_abrir_usuarios=None, on_abrir_bd=None):
+    def __init__(self, on_abrir_botellas=None, on_abrir_usuarios=None, on_abrir_bd=None, on_abrir_entrenamiento=None):
         super().__init__()
         
         # Callbacks para cuando hagamos clic en los botones
         self.on_abrir_botellas = on_abrir_botellas
         self.on_abrir_usuarios = on_abrir_usuarios
         self.on_abrir_bd = on_abrir_bd # Guardamos la variable
+        self.on_abrir_entrenamiento = on_abrir_entrenamiento
         
         self.title("Panel Central - Milcast Corp")
         self.geometry("650x550")
@@ -45,21 +46,21 @@ class PantallaMenuPrincipal(ctk.CTkToplevel):
         fuente_btn = ("Roboto", 16, "bold")
 
         self.btn_usuarios = ctk.CTkButton(self.grid_frame, text="👤\n\nUsuarios", width=ancho_btn, height=alto_btn, 
-                                          font=fuente_btn, fg_color="#2b2b2b", hover_color="#3b3b3b", command=self.btn_usuarios_click)
+                                          font=fuente_btn, fg_color="#134279", hover_color="#3b3b3b", command=self.btn_usuarios_click)
         self.btn_usuarios.grid(row=0, column=0, padx=15, pady=15)
 
         self.btn_botellas = ctk.CTkButton(self.grid_frame, text="🍾\n\nTipo de Botella", width=ancho_btn, height=alto_btn, 
-                                          font=fuente_btn, fg_color="#1f538d", hover_color="#14375e", command=self.btn_botellas_click)
+                                          font=fuente_btn, fg_color="#134279", hover_color="#14375e", command=self.btn_botellas_click)
         self.btn_botellas.grid(row=0, column=1, padx=15, pady=15)
 
         self.btn_bd = ctk.CTkButton(self.grid_frame, text="📊\n\nBase de Datos", width=ancho_btn, height=alto_btn, 
-                                    font=fuente_btn, fg_color="#2b2b2b", hover_color="#3b3b3b", 
+                                    font=fuente_btn, fg_color="#134279", hover_color="#3b3b3b", 
                                     command=self.btn_bd_click) 
         # CORRECCIÓN 2: Faltaba esta línea para mostrar el botón en pantalla
         self.btn_bd.grid(row=1, column=0, padx=15, pady=15)
 
-        self.btn_opcion1 = ctk.CTkButton(self.grid_frame, text="⚙️\n\nOpción 1", width=ancho_btn, height=alto_btn, 
-                                         font=fuente_btn, fg_color="#2b2b2b", hover_color="#3b3b3b", command=self.en_construccion)
+        self.btn_opcion1 = ctk.CTkButton(self.grid_frame, text="⚙️\n\nEntrenar", width=ancho_btn, height=alto_btn, 
+                                         font=fuente_btn, fg_color="#134279", hover_color="#3b3b3b", command=self.btn_entrenamiento_click)
         self.btn_opcion1.grid(row=1, column=1, padx=15, pady=15)
 
     def btn_usuarios_click(self):
@@ -83,3 +84,9 @@ class PantallaMenuPrincipal(ctk.CTkToplevel):
             self.on_abrir_bd()
         else:
             print("Módulo BD no conectado")
+    
+    def btn_entrenamiento_click(self):
+     if hasattr(self, 'on_abrir_entrenamiento') and self.on_abrir_entrenamiento:
+         self.on_abrir_entrenamiento()
+     else:
+         print("Módulo Entrenamiento no conectado")

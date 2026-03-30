@@ -4,6 +4,7 @@ from Interfaz_Grafica.dashboard import PantallaMenuPrincipal
 from Interfaz_Grafica.inspeccion import PantallaInspeccion
 from Interfaz_Grafica.gestor_usuarios import PantallaUsuarios
 from Interfaz_Grafica.pantalla_bd import PantallaBaseDatos 
+from Interfaz_Grafica.entrenamiento import PantallaEntrenamiento
 
 class AplicacionPrincipal:
     def __init__(self):
@@ -20,7 +21,8 @@ class AplicacionPrincipal:
         self.menu_vnt = PantallaMenuPrincipal(
             on_abrir_botellas=self.abrir_inspeccion,
             on_abrir_usuarios=self.abrir_usuarios,
-            on_abrir_bd=self.abrir_base_datos
+            on_abrir_bd=self.abrir_base_datos,
+            on_abrir_entrenamiento=self.abrir_entrenamiento
         )
 
     # --- CONTROLADORES DE VENTANAS SECUNDARIAS ---
@@ -43,7 +45,7 @@ class AplicacionPrincipal:
         self.menu_vnt.withdraw()
         self.ventana_usuarios = PantallaUsuarios(on_volver=self.mostrar_menu)
         self.ventana_usuarios.focus()
-    
+
     def abrir_base_datos(self):
         self.menu_vnt.withdraw()
         # Le enviamos el formato actual a la pantalla de BD
@@ -52,6 +54,11 @@ class AplicacionPrincipal:
             formato_actual=self.formato_actual
         )
         self.ventana_bd.focus()
+
+    def abrir_entrenamiento(self):
+        self.menu_vnt.withdraw()
+        self.ventana_entrenamiento = PantallaEntrenamiento(on_volver=self.mostrar_menu)
+        self.ventana_entrenamiento.focus()
 
     def mostrar_menu(self):
         self.menu_vnt.deiconify()
