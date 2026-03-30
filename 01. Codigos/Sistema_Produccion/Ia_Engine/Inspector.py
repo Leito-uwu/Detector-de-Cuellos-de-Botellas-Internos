@@ -99,3 +99,6 @@ if __name__ == "__main__":
                 input("👉 Presiona ENTER para procesar la siguiente botella (o Ctrl+C para salir)... \n")
         
         print("✅ Lote terminado. Cinta transportadora detenida.")
+
+
+        
