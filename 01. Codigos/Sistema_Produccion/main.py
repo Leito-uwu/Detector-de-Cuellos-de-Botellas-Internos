@@ -8,7 +8,7 @@ from Interfaz_Grafica.entrenamiento import PantallaEntrenamiento
 
 class AplicacionPrincipal:
     def __init__(self):
-        # 🟢 ESTADO GLOBAL: Memoria central de la máquina
+        # ESTADO GLOBAL: Memoria central de la máquina
         self.formato_actual = "Botella Tipo A" 
         
         self.mostrar_login()
@@ -36,7 +36,7 @@ class AplicacionPrincipal:
         ) 
         self.ventana_inspeccion.focus()
 
-    # 🟢 FUNCIÓN QUE RECIBE EL CAMBIO DE BOTELLA
+    # FUNCIÓN QUE RECIBE EL CAMBIO DE BOTELLA
     def actualizar_formato(self, nuevo_formato):
         self.formato_actual = nuevo_formato
         print(f"🔄 Sistema central actualizado a: {self.formato_actual}")
@@ -56,8 +56,12 @@ class AplicacionPrincipal:
         self.ventana_bd.focus()
 
     def abrir_entrenamiento(self):
-        self.menu_vnt.withdraw()
-        self.ventana_entrenamiento = PantallaEntrenamiento(on_volver=self.mostrar_menu)
+        self.menu_vnt.withdraw() 
+        
+        self.ventana_entrenamiento = PantallaEntrenamiento(
+            on_volver=self.mostrar_menu, 
+            formato_actual=self.formato_actual
+        )
         self.ventana_entrenamiento.focus()
 
     def mostrar_menu(self):
