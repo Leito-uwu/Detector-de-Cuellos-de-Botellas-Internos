@@ -12,7 +12,7 @@ def trabajar_con_contorno_blanco(imagen_bgr_original):
     centro_foto_x = nuevo_ancho // 2
     centro_foto_y = nuevo_alto // 2
 
-    gris = imagen_trabajo
+    gris = cv2.cvtColor(imagen_trabajo, cv2.COLOR_BGR2GRAY)
     
     gris_suavizado = cv2.medianBlur(gris, 15)
 

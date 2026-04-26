@@ -1,4 +1,5 @@
 import cv2
+import numpy as np
 
 def procesar_imagen(imagen_recortada,tamano_final = (224,224)):
     if imagen_recortada is None:
