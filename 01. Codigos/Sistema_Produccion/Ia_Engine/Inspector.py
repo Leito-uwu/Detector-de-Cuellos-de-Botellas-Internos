@@ -1,15 +1,31 @@
+import sys
+import os
+
+# ==============================================================================
+# 🟢 INYECCIÓN DE RUTA (CRÍTICO: Para que encuentre la carpeta Modulos_Vision)
+# ==============================================================================
+ruta_raiz = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if ruta_raiz not in sys.path:
+    sys.path.append(ruta_raiz)
+
+# ==============================================================================
+# AHORA SÍ: Importamos el resto
+# ==============================================================================
 import cv2
 import numpy as np
 import tensorflow as tf
+import time
+import glob
 
 # Importamos tus módulos de preprocesamiento
-from Preprocesamiento.Centrado import trabajar_con_contorno_blanco
-from Preprocesamiento.Cortado import recortar_botella_dinamico
-from Preprocesamiento.Filtrado import procesar_imagen
+from Modulos_Vision.Centrado import trabajar_con_contorno_blanco
+from Modulos_Vision.Cortado import recortar_botella_dinamico
+from Modulos_Vision.Filtrado import procesar_imagen
 
 # 1. CARGAMOS EL MODELO UNA SOLA VEZ AL ENCENDER EL PROGRAMA
 print("Iniciando sistema... Cargando el cerebro .keras...")
-modelo_inspector = tf.keras.models.load_model(r"C:\Users\leona\Documents\PPP_Aranjuez\01. Codigos\Modelo de Aprendizaje\modelo_inspector_botellas.keras")
+# 🟢 TU NUEVA RUTA DEL MODELO
+modelo_inspector = tf.keras.models.load_model(r"C:\Users\leona\Documents\PPP_Aranjuez\01. Codigos\Sistema_Produccion\Ia_Engine\modelo_inspector_botellas.keras")
 print("✅ Sistema listo.\n")
 
 def inspeccionar_botella(ruta_foto_camara):
@@ -50,17 +66,11 @@ def inspeccionar_botella(ruta_foto_camara):
     else:
         return "BUENA"
 
-import time
-
-import time
-import os
-import glob
-
 # ==========================================
 # SIMULACIÓN CONTINUA DE LA LÍNEA DE PRODUCCIÓN
 # ==========================================
 if __name__ == "__main__":
-    # 1. Ahora apuntamos a la CARPETA, no a una sola foto
+    # 1. TU NUEVA RUTA DE LA CARPETA DE PRUEBAS
     carpeta_pruebas = r"C:\Users\leona\Documents\PPP_Aranjuez\01. Codigos\Imagenes_Pruebas\Botellas_Malas"
     
     # 2. Buscamos todas las imágenes JPG en esa carpeta
@@ -94,11 +104,7 @@ if __name__ == "__main__":
             print("=========================================")
             
             # 4. PAUSA DEL SISTEMA
-            # El programa se congela aquí hasta que presiones Enter en la consola
             if indice < len(lista_fotos):
                 input("👉 Presiona ENTER para procesar la siguiente botella (o Ctrl+C para salir)... \n")
         
         print("✅ Lote terminado. Cinta transportadora detenida.")
-
-
-        

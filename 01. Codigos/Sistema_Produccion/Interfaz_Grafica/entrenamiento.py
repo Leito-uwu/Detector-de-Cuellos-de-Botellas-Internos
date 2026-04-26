@@ -3,89 +3,181 @@ import os
 from PIL import Image
 
 class PantallaEntrenamiento(ctk.CTkToplevel):
-    def __init__(self, on_volver):
+    def __init__(self, on_volver, formato_actual):
         super().__init__()
         self.on_volver = on_volver
-        
+        # El formato inicial viene del Menú, pero ahora se puede cambiar aquí
+        self.formato_actual = formato_actual
+
+        # CONTADORES LOCALES (Simulados para la demostración)
+        self.conteo_buenas_demo = 0
+        self.conteo_malas_demo = 0
+
         self.title("Entrenamiento de IA - Milcast Corp")
-        self.geometry("700x600")
+        self.geometry("950x700") # Un poco más amplio para el nuevo campo
         self.resizable(False, False)
-        self.protocol("WM_DELETE_WINDOW", self.cerrar_ventana)
+        self.protocol("WM_DELETE_WINDOW", self.btn_volver_click)
 
-        # --- CABECERA ---
-        self.header_frame = ctk.CTkFrame(self, fg_color="transparent")
-        self.header_frame.pack(side="top", fill="x", padx=20, pady=20)
+        # ==========================================
+        # 🎨 PALETA DE COLORES
+        # ==========================================
+        self.COLOR_FONDO = "#F5EFE7"    
+        self.COLOR_HEADER = "#2B1D15"   
+        self.COLOR_TEXTO_HD = "#F5EFE7" 
+        self.COLOR_TEXTO = "#212121"    
+        self.COLOR_BLANCO = "#FFFFFF"   
+        self.COLOR_ACENTO = "#721B35"   # Color vino para resaltar el nombre
+        
+        self.configure(fg_color=self.COLOR_FONDO)
 
-        ruta_logo = os.path.join(os.path.dirname(__file__), "..", "Assets","Aranjuez_logo.png")
+        # ==========================================
+        # 🍫 CABECERA CORPORATIVA
+        # ==========================================
+        self.header_frame = ctk.CTkFrame(self, fg_color=self.COLOR_HEADER, corner_radius=0, height=120)
+        self.header_frame.pack(side="top", fill="x")
+        self.header_frame.pack_propagate(False)
+
+        self.frame_titulos = ctk.CTkFrame(self.header_frame, fg_color="transparent")
+        self.frame_titulos.pack(expand=True)
+
+        ruta_logo = os.path.join(os.path.dirname(__file__), "..", "Assets","Aranjuez_logo_1.png")
+             
         try:
             pil_image = Image.open(ruta_logo)
-            self.ctk_logo = ctk.CTkImage(light_image=pil_image, dark_image=pil_image, size=(80, 80))
-            self.label_logo = ctk.CTkLabel(self.header_frame, text="", image=self.ctk_logo)
+            self.ctk_logo = ctk.CTkImage(light_image=pil_image, dark_image=pil_image, size=(70, 60))
+            self.label_logo = ctk.CTkLabel(self.frame_titulos, text="", image=self.ctk_logo)
         except:
-            self.label_logo = ctk.CTkLabel(self.header_frame, text="[ LOGO ]", width=80, height=80, fg_color="gray30")
-        self.label_logo.pack(side="left", padx=(0, 20))
+            self.label_logo = ctk.CTkLabel(self.frame_titulos, text="[ LOGO ]", text_color=self.COLOR_TEXTO_HD)
+        self.label_logo.pack(pady=(5, 0))
 
-        self.label_titulo = ctk.CTkLabel(self.header_frame, text="CAPTURA DE DATOS (DATASET)", font=("Roboto", 22, "bold"))
-        self.label_titulo.pack(side="left")
+        self.label_titulo = ctk.CTkLabel(self.frame_titulos, text="SISTEMA DE ENTRENAMIENTO", 
+                                         font=("Roboto", 22, "bold"), text_color=self.COLOR_TEXTO_HD)
+        self.label_titulo.pack(pady=(5, 5))
 
-        self.btn_volver = ctk.CTkButton(self.header_frame, text="Volver al Menú", width=100, 
-                                        fg_color="gray40", hover_color="gray30", command=self.cerrar_ventana)
-        self.btn_volver.pack(side="right")
+        self.btn_volver = ctk.CTkButton(self.header_frame, text="Volver al Menú", width=120, height=35,
+                                        corner_radius=8, fg_color=self.COLOR_FONDO, text_color=self.COLOR_HEADER, 
+                                        hover_color="#D1CCC0", font=("Roboto", 13), command=self.btn_volver_click)
+        self.btn_volver.place(relx=0.97, rely=0.5, anchor="e")
 
-        self.separador = ctk.CTkFrame(self, height=2, fg_color="gray30")
-        self.separador.pack(fill="x", padx=20, pady=(0, 10))
+        # ==========================================
+        # 📦 CUERPO DE ENTRENAMIENTO
+        # ==========================================
+        self.main_frame = ctk.CTkFrame(self, fg_color="transparent")
+        self.main_frame.pack(fill="both", expand=True, padx=30, pady=20)
 
-        # --- CUERPO ---
-        # 1. Entrada del Nombre
-        self.frame_nombre = ctk.CTkFrame(self, fg_color="transparent")
-        self.frame_nombre.pack(pady=10)
+        # ------------------------------------------
+        # 🖥️ ÁREA IZQUIERDA: CÁMARA (SIMULADA)
+        # ------------------------------------------
+        self.frame_camara = ctk.CTkFrame(self.main_frame, fg_color=self.COLOR_BLANCO, corner_radius=15, border_width=1, border_color="#D1CCC0")
+        self.frame_camara.pack(side="left", fill="both", expand=True, padx=(0, 20))
+
+        self.label_cam_titulo = ctk.CTkLabel(self.frame_camara, text="📺 Monitor de Captura", 
+                                              font=("Roboto", 16, "bold"), text_color=self.COLOR_TEXTO)
+        self.label_cam_titulo.pack(pady=15)
+
+        self.label_video = ctk.CTkLabel(self.frame_camara, text="[ Cámara Desactivada para el Demo ]", 
+                                        font=("Roboto", 14, "italic"), text_color="gray50")
+        self.label_video.pack(fill="both", expand=True, padx=15)
+
+        self.frame_botones_captura = ctk.CTkFrame(self.frame_camara, fg_color="transparent")
+        self.frame_botones_captura.pack(side="bottom", fill="x", padx=15, pady=25)
+
+        self.btn_capturar_buena = ctk.CTkButton(self.frame_botones_captura, text="📸 CAPTURAR BUENA", 
+                                                 font=("Roboto", 14, "bold"), width=180, height=45,
+                                                 fg_color="#1E7B40", hover_color="#145A2D",
+                                                 command=self.btn_capturar_buena_click)
+        self.btn_capturar_buena.pack(side="left", expand=True)
+
+        self.btn_capturar_mala = ctk.CTkButton(self.frame_botones_captura, text="📸 CAPTURAR MALA", 
+                                                font=("Roboto", 14, "bold"), width=180, height=45,
+                                                fg_color="#A94442", hover_color="#7B2F2D",
+                                                command=self.btn_capturar_mala_click)
+        self.btn_capturar_mala.pack(side="right", expand=True)
+
+        # ------------------------------------------
+        # 📝 ÁREA DERECHA: CONFIGURACIÓN Y ESTADO
+        # ------------------------------------------
+        self.frame_config = ctk.CTkFrame(self.main_frame, fg_color="transparent", width=300)
+        self.frame_config.pack(side="right", fill="both")
+
+        # 🖊️ NUEVA SECCIÓN: ESCRIBIR TIPO DE BOTELLA
+        self.lbl_input_tit = ctk.CTkLabel(self.frame_config, text="🏷️ Registrar Nuevo Tipo", 
+                                          font=("Roboto", 16, "bold"), text_color=self.COLOR_HEADER)
+        self.lbl_input_tit.pack(pady=(0, 10), anchor="w")
+
+        self.entry_tipo_botella = ctk.CTkEntry(self.frame_config, 
+                                               placeholder_text="Escriba nombre de botella...",
+                                               width=280, height=45, corner_radius=10,
+                                               fg_color=self.COLOR_BLANCO, text_color=self.COLOR_TEXTO,
+                                               border_color="#D1CCC0", border_width=1)
+        self.entry_tipo_botella.pack(pady=(0, 10))
         
-        self.label_nombre = ctk.CTkLabel(self.frame_nombre, text="Nombre del nuevo formato:", font=("Roboto", 14))
-        self.label_nombre.pack(side="left", padx=10)
-        
-        self.entry_nombre = ctk.CTkEntry(self.frame_nombre, placeholder_text="Ej: Botella Tipo F", width=250)
-        self.entry_nombre.pack(side="left", padx=10)
+        # Botón para confirmar el nombre escrito
+        self.btn_confirmar_nombre = ctk.CTkButton(self.frame_config, text="Actualizar Formato", 
+                                                  width=280, height=35, corner_radius=8,
+                                                  fg_color=self.COLOR_HEADER, text_color=self.COLOR_BLANCO,
+                                                  command=self.actualizar_nombre_formato)
+        self.btn_confirmar_nombre.pack(pady=(0, 25))
 
-        # 2. Visor de la Cámara (El espacio visual)
-        self.frame_camara = ctk.CTkFrame(self, width=450, height=300, fg_color="black")
-        self.frame_camara.pack(pady=15)
-        self.frame_camara.pack_propagate(False) # Esto obliga a que el recuadro negro mantenga su tamaño
-        
-        self.label_camara = ctk.CTkLabel(self.frame_camara, text="📷\nVISOR DE CÁMARA\n(Listo para conectar OpenCV)", font=("Roboto", 16), text_color="gray")
-        self.label_camara.pack(expand=True)
+        # --- ESTADO DEL DATASET ---
+        self.label_estado_titulo = ctk.CTkLabel(self.frame_config, text="📊 Resumen de Capturas", 
+                                                 font=("Roboto", 16, "bold"), text_color=self.COLOR_HEADER)
+        self.label_estado_titulo.pack(pady=(5, 5), anchor="w")
 
-        # 3. Botones de Captura
-        self.frame_botones = ctk.CTkFrame(self, fg_color="transparent")
-        self.frame_botones.pack(pady=10)
+        # Muestra qué botella se está capturando actualmente
+        self.label_formato_status = ctk.CTkLabel(self.frame_config, text=f"Editando: {self.formato_actual}", 
+                                                 font=("Roboto", 14, "bold"), text_color=self.COLOR_ACENTO)
+        self.label_formato_status.pack(pady=(0, 15), anchor="w")
 
-        self.btn_buenas = ctk.CTkButton(self.frame_botones, text="📷 Capturar\nBOTELLA BUENA", width=180, height=60, 
-                                        font=("Roboto", 14, "bold"), fg_color="green", hover_color="darkgreen", 
-                                        command=self.capturar_buena)
-        self.btn_buenas.pack(side="left", padx=20)
+        # CONTADORES
+        # Buenas
+        self.frame_count_buenas = ctk.CTkFrame(self.frame_config, fg_color=self.COLOR_BLANCO, corner_radius=12, border_width=1, border_color="#D1CCC0")
+        self.frame_count_buenas.pack(pady=10, fill="x")
+        ctk.CTkLabel(self.frame_count_buenas, text="BUENAS REGISTRADAS", font=("Roboto", 11), text_color="gray40").pack(pady=(5, 0))
+        self.label_conteo_buenas = ctk.CTkLabel(self.frame_count_buenas, text="0", font=("Arial", 35, "bold"), text_color="#1E7B40")
+        self.label_conteo_buenas.pack(pady=(0, 5))
 
-        self.btn_malas = ctk.CTkButton(self.frame_botones, text="📷 Capturar\nBOTELLA MALA", width=180, height=60, 
-                                        font=("Roboto", 14, "bold"), fg_color="#d32f2f", hover_color="#9a0007", 
-                                        command=self.capturar_mala)
-        self.btn_malas.pack(side="right", padx=20)
+        # Malas
+        self.frame_count_malas = ctk.CTkFrame(self.frame_config, fg_color=self.COLOR_BLANCO, corner_radius=12, border_width=1, border_color="#D1CCC0")
+        self.frame_count_malas.pack(pady=10, fill="x")
+        ctk.CTkLabel(self.frame_count_malas, text="MALAS REGISTRADAS", font=("Roboto", 11), text_color="gray40").pack(pady=(5, 0))
+        self.label_conteo_malas = ctk.CTkLabel(self.frame_count_malas, text="0", font=("Arial", 35, "bold"), text_color="#A94442")
+        self.label_conteo_malas.pack(pady=(0, 5))
 
-        # 4. Mensajes de confirmación
-        self.lbl_mensaje = ctk.CTkLabel(self, text="", font=("Roboto", 14))
-        self.lbl_mensaje.pack(pady=10)
+        self.label_mensaje_info = ctk.CTkLabel(self.frame_config, text="", font=("Roboto", 12))
+        self.label_mensaje_info.pack(pady=10)
 
-    def capturar_buena(self):
-        nombre = self.entry_nombre.get().strip()
-        if not nombre:
-            self.lbl_mensaje.configure(text="⚠️ Primero escribe el nombre de la botella", text_color="yellow")
-            return
-        self.lbl_mensaje.configure(text=f"✅ Foto de '{nombre}' BUENA guardada correctamente.", text_color="green")
+    # ==========================================
+    # ⚙️ LÓGICA DE LA INTERFAZ
+    # ==========================================
+    def actualizar_nombre_formato(self):
+        nuevo_nombre = self.entry_tipo_botella.get().strip()
+        if nuevo_nombre:
+            self.formato_actual = nuevo_nombre
+            self.label_formato_status.configure(text=f"Editando: {self.formato_actual}")
+            # Resetear contadores para el nuevo tipo (opcional, para el demo)
+            self.conteo_buenas_demo = 0
+            self.conteo_malas_demo = 0
+            self.label_conteo_buenas.configure(text="0")
+            self.label_conteo_malas.configure(text="0")
+            self.label_mensaje_info.configure(text="✅ Nuevo formato listo", text_color="#1E7B40")
+        else:
+            self.label_mensaje_info.configure(text="⚠️ Escriba un nombre válido", text_color="#A94442")
 
-    def capturar_mala(self):
-        nombre = self.entry_nombre.get().strip()
-        if not nombre:
-            self.lbl_mensaje.configure(text="⚠️ Primero escribe el nombre de la botella", text_color="yellow")
-            return
-        self.lbl_mensaje.configure(text=f"❌ Foto de '{nombre}' MALA guardada correctamente.", text_color="red")
+    def btn_capturar_buena_click(self):
+        self.conteo_buenas_demo += 1
+        self.label_conteo_buenas.configure(text=str(self.conteo_buenas_demo))
+        self.mostrar_confirmacion("BUENA")
 
-    def cerrar_ventana(self):
-        self.destroy()
+    def btn_capturar_mala_click(self):
+        self.conteo_malas_demo += 1
+        self.label_conteo_malas.configure(text=str(self.conteo_malas_demo))
+        self.mostrar_confirmacion("MALA")
+
+    def mostrar_confirmacion(self, tipo):
+        self.label_mensaje_info.configure(text=f"✨ Capturada {tipo} de {self.formato_actual}", text_color=self.COLOR_HEADER)
+        self.after(1500, lambda: self.label_mensaje_info.configure(text=""))
+
+    def btn_volver_click(self):
+        self.destroy() 
         self.on_volver()

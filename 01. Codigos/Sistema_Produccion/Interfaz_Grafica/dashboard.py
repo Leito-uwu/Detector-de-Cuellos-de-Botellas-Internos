@@ -3,90 +3,128 @@ import os
 from PIL import Image
 
 class PantallaMenuPrincipal(ctk.CTkToplevel):
-    # CORRECCIÓN 1: Añadimos 'on_abrir_bd=None' a los parámetros
     def __init__(self, on_abrir_botellas=None, on_abrir_usuarios=None, on_abrir_bd=None, on_abrir_entrenamiento=None):
         super().__init__()
         
-        # Callbacks para cuando hagamos clic en los botones
+        # Guardamos los callbacks
         self.on_abrir_botellas = on_abrir_botellas
         self.on_abrir_usuarios = on_abrir_usuarios
-        self.on_abrir_bd = on_abrir_bd # Guardamos la variable
+        self.on_abrir_bd = on_abrir_bd 
         self.on_abrir_entrenamiento = on_abrir_entrenamiento
         
-        self.title("Panel Central - Milcast Corp")
-        self.geometry("650x550")
-        self.resizable(False, False)
+        self.title("Menu - Aranjuez")
+        self.geometry("750x650") 
+        self.resizable(False, False) 
+        
+        # ==========================================
+        # 🎨 PALETA DE COLORES ARANJUEZ (Extraída de tu imagen)
+        # ==========================================
+        self.COLOR_CAFE = "#2B1D15"     # Marrón Chocolate Profundo (Para el fondo)
+        self.COLOR_VINO = "#721B35"     # Rojo Vino Profundo (Para los botones)
+        self.COLOR_CREMA = "#F5EFE7"    # Crema Muy Claro (Para los textos)
+        self.COLOR_HOVER = "#5A152A"    # Vino un poco más oscuro para el efecto al pasar el mouse
+        
+        # Fondo general a Café para resaltar los logos dorados/claros
+        self.configure(fg_color=self.COLOR_CAFE)
 
-        # --- CABECERA ---
-        self.header_frame = ctk.CTkFrame(self, fg_color="transparent")
-        self.header_frame.pack(side="top", fill="x", padx=20, pady=20)
-
-        # Cargar Logo
+        # ==========================================
+        # 🍷 LOGO PRINCIPAL (ARRIBA AL MEDIO)
+        # ==========================================
         ruta_actual = os.path.dirname(__file__)
-        ruta_logo = os.path.join(ruta_actual, "..", "Assets","Aranjuez_logo.png") 
-        
+        ruta_logo_principal = os.path.join(ruta_actual, "..", "Assets", "Aranjuez_logo_1.png")
+            
         try:
-            pil_image = Image.open(ruta_logo)
-            self.ctk_logo = ctk.CTkImage(light_image=pil_image, dark_image=pil_image, size=(80, 80))
-            self.label_logo = ctk.CTkLabel(self.header_frame, text="", image=self.ctk_logo)
+            pil_image_main = Image.open(ruta_logo_principal)
+            self.ctk_logo_main = ctk.CTkImage(light_image=pil_image_main, dark_image=pil_image_main, size=(200, 160))
+            self.label_logo_main = ctk.CTkLabel(self, text="", image=self.ctk_logo_main)
         except:
-            self.label_logo = ctk.CTkLabel(self.header_frame, text="[ LOGO ]", width=80, height=80, fg_color="gray30")
+            self.label_logo_main = ctk.CTkLabel(self, text="[ LOGO ARANJUEZ ]", font=("Arial", 30, "bold"), text_color=self.COLOR_CREMA)
         
-        self.label_logo.pack(side="left", padx=(0, 20))
+        self.label_logo_main.pack(pady=(20, 0))
 
-        self.label_titulo = ctk.CTkLabel(self.header_frame, text="MENÚ PRINCIPAL", font=("Roboto", 24, "bold"))
-        self.label_titulo.pack(side="left")
+        # ==========================================
+        # ⬇️ ÁREA INFERIOR (Empaquetada PRIMERO para que no se corte)
+        # ==========================================
+        # Le damos un alto fijo de 60px y prohibimos que se encoja
+        self.frame_bottom = ctk.CTkFrame(self, fg_color="transparent", height=60)
+        self.frame_bottom.pack(side="bottom", fill="x", padx=30, pady=(0, 20))
+        self.frame_bottom.pack_propagate(False) 
 
-        # --- CUERPO (CUADRÍCULA DE BOTONES) ---
-        self.grid_frame = ctk.CTkFrame(self, fg_color="transparent")
-        self.grid_frame.pack(pady=(20, 10))
+        # 🟢 LOGO 50 AÑOS (Más pequeño y bien anclado a la izquierda)
+        ruta_logo_50 = os.path.join(ruta_actual, "..", "Assets", "logo_50.png")
+        try:
+            pil_image_50 = Image.open(ruta_logo_50)
+            # Reducido a 50x50 para que encaje perfecto
+            self.ctk_logo_50 = ctk.CTkImage(light_image=pil_image_50, dark_image=pil_image_50, size=(50, 50))
+            self.label_logo_50 = ctk.CTkLabel(self.frame_bottom, text="", image=self.ctk_logo_50)
+        except:
+            self.label_logo_50 = ctk.CTkLabel(self.frame_bottom, text="[50 Años]", text_color=self.COLOR_CREMA)
+        
+        self.label_logo_50.pack(side="left", pady=5)
 
-        ancho_btn = 160
-        alto_btn = 140
-        fuente_btn = ("Roboto", 16, "bold")
+        # 🟢 BOTÓN CERRAR SESIÓN (Alineado a la derecha)
+        self.btn_logout = ctk.CTkButton(self.frame_bottom, text="Cerrar Sesión", width=120, height=40,
+                                       corner_radius=20, fg_color="transparent", border_width=2, 
+                                       border_color=self.COLOR_CREMA, text_color=self.COLOR_CREMA, 
+                                       hover_color="#452e22", font=("Roboto", 14, "bold"), 
+                                       command=self.cerrar_programa)
+        self.btn_logout.pack(side="right", pady=10)
 
-        self.btn_usuarios = ctk.CTkButton(self.grid_frame, text="👤\n\nUsuarios", width=ancho_btn, height=alto_btn, 
-                                          font=fuente_btn, fg_color="#134279", hover_color="#3b3b3b", command=self.btn_usuarios_click)
-        self.btn_usuarios.grid(row=0, column=0, padx=15, pady=15)
+        # ==========================================
+        # 📦 CUADRÍCULA DE BOTONES (2x2)
+        # ==========================================
+        # Empaquetado con expand=True, llenará el espacio restante sin aplastar lo de abajo
+        self.frame_grid = ctk.CTkFrame(self, fg_color="transparent")
+        self.frame_grid.pack(expand=True)
 
-        self.btn_botellas = ctk.CTkButton(self.grid_frame, text="🍾\n\nTipo de Botella", width=ancho_btn, height=alto_btn, 
-                                          font=fuente_btn, fg_color="#134279", hover_color="#14375e", command=self.btn_botellas_click)
-        self.btn_botellas.grid(row=0, column=1, padx=15, pady=15)
+        # Ajuste leve de altura para que respire mejor la interfaz
+        ancho_btn = 210
+        alto_btn = 150 
+        fuente_btn = ("Roboto", 15, "bold")
 
-        self.btn_bd = ctk.CTkButton(self.grid_frame, text="📊\n\nBase de Datos", width=ancho_btn, height=alto_btn, 
-                                    font=fuente_btn, fg_color="#134279", hover_color="#3b3b3b", 
-                                    command=self.btn_bd_click) 
-        # CORRECCIÓN 2: Faltaba esta línea para mostrar el botón en pantalla
-        self.btn_bd.grid(row=1, column=0, padx=15, pady=15)
+        # [FILA 0, COLUMNA 0]
+        self.btn_entrenamiento = ctk.CTkButton(self.frame_grid, text="🧠\n\nENTRENAMIENTO\nIA", 
+                                               width=ancho_btn, height=alto_btn, corner_radius=20,
+                                               font=fuente_btn, fg_color=self.COLOR_VINO, text_color=self.COLOR_CREMA,
+                                               hover_color=self.COLOR_HOVER, command=self.btn_entrenamiento_click)
+        self.btn_entrenamiento.grid(row=0, column=0, padx=20, pady=15)
 
-        self.btn_opcion1 = ctk.CTkButton(self.grid_frame, text="⚙️\n\nEntrenar", width=ancho_btn, height=alto_btn, 
-                                         font=fuente_btn, fg_color="#134279", hover_color="#3b3b3b", command=self.btn_entrenamiento_click)
-        self.btn_opcion1.grid(row=1, column=1, padx=15, pady=15)
+        # [FILA 0, COLUMNA 1]
+        self.btn_botellas = ctk.CTkButton(self.frame_grid, text="🔍\n\nINSPECCIÓN\nDE LÍNEA", 
+                                          width=ancho_btn, height=alto_btn, corner_radius=20,
+                                          font=fuente_btn, fg_color=self.COLOR_VINO, text_color=self.COLOR_CREMA,
+                                          hover_color=self.COLOR_HOVER, command=self.btn_botellas_click)
+        self.btn_botellas.grid(row=0, column=1, padx=20, pady=15)
 
-    def btn_usuarios_click(self):
-        if self.on_abrir_usuarios:
-            self.on_abrir_usuarios()
-        else:
-            print("Módulo Usuarios no conectado")
+        # [FILA 1, COLUMNA 0]
+        self.btn_bd = ctk.CTkButton(self.frame_grid, text="📊\n\nREPORTES Y\nESTADÍSTICAS", 
+                                    width=ancho_btn, height=alto_btn, corner_radius=20,
+                                    font=fuente_btn, fg_color=self.COLOR_VINO, text_color=self.COLOR_CREMA,
+                                    hover_color=self.COLOR_HOVER, command=self.btn_bd_click)
+        self.btn_bd.grid(row=1, column=0, padx=20, pady=15)
+
+        # [FILA 1, COLUMNA 1]
+        self.btn_usuarios = ctk.CTkButton(self.frame_grid, text="👥\n\nGESTIÓN DE\nUSUARIOS", 
+                                          width=ancho_btn, height=alto_btn, corner_radius=20,
+                                          font=fuente_btn, fg_color=self.COLOR_VINO, text_color=self.COLOR_CREMA,
+                                          hover_color=self.COLOR_HOVER, command=self.btn_usuarios_click)
+        self.btn_usuarios.grid(row=1, column=1, padx=20, pady=15)
+
+
+    # ==========================================
+    # 🔗 FUNCIONES DE CONEXIÓN
+    # ==========================================
+    def btn_entrenamiento_click(self):
+        if self.on_abrir_entrenamiento: self.on_abrir_entrenamiento()
 
     def btn_botellas_click(self):
-        if self.on_abrir_botellas:
-            self.on_abrir_botellas()
-        else:
-            print("Módulo Botellas no conectado")
+        if self.on_abrir_botellas: self.on_abrir_botellas()
 
-    def en_construccion(self):
-        print("Este módulo aún está en desarrollo.")
-
-    # CORRECCIÓN 3: Indentación correcta (espacios a la izquierda)
     def btn_bd_click(self):
-        if hasattr(self, 'on_abrir_bd') and self.on_abrir_bd:
-            self.on_abrir_bd()
-        else:
-            print("Módulo BD no conectado")
-    
-    def btn_entrenamiento_click(self):
-     if hasattr(self, 'on_abrir_entrenamiento') and self.on_abrir_entrenamiento:
-         self.on_abrir_entrenamiento()
-     else:
-         print("Módulo Entrenamiento no conectado")
+        if self.on_abrir_bd: self.on_abrir_bd()
+
+    def btn_usuarios_click(self):
+        if self.on_abrir_usuarios: self.on_abrir_usuarios()
+
+    def cerrar_programa(self):
+        self.destroy()
